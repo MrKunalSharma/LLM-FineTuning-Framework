@@ -32,7 +32,7 @@ with st.sidebar:
     - ✅ Production-ready API
     - ✅ Docker containerization
     
-    **GitHub**: [View Repository](https://github.com/YOUR_USERNAME/LLM-FineTuning-Framework)
+    **GitHub**: [View Repository](https://github.com/MrKunalSharma/LLM-FineTuning-Framework)
     """)
     
     st.divider()
@@ -127,18 +127,96 @@ with tab1:
                 st.warning("Running in Demo Mode (API not connected)")
                 st.info("This would generate a response using your fine-tuned model.")
                 
-                # Show example
-                examples = {
-                    "Translate to French": "Bonjour, comment allez-vous?",
-                    "Summarize": "This text discusses the main points concisely.",
-                    "Write code": "def example():\n    return 'Hello, World!'"
-                }
+                # Show example based on instruction
+                st.markdown("### 📝 Example Response")
                 
-                for key in examples:
-                    if key.lower() in instruction.lower():
-                        st.markdown("### 📝 Example Response")
-                        st.code(examples[key])
-                        break
+                if any(word in instruction.lower() for word in ["translate", "french", "spanish", "german"]):
+                    if "french" in instruction.lower():
+                        if input_text:
+                            st.info(f"🇫🇷 Traduction: {input_text} → Bonjour, comment allez-vous?")
+                        else:
+                            st.info("🇫🇷 Bonjour, comment allez-vous?")
+                    elif "spanish" in instruction.lower():
+                        st.info("🇪🇸 Hola, ¿cómo estás?")
+                    else:
+                        st.info("🌍 [Translation would appear here]")
+                
+                elif any(word in instruction.lower() for word in ["summarize", "summary", "brief"]):
+                    if input_text:
+                        summary = "AI is revolutionizing multiple industries by enhancing efficiency and opening new opportunities."
+                        st.info(f"📄 Summary: {summary}")
+                    else:
+                        st.info("📄 This text discusses the main points concisely.")
+                
+                elif any(word in instruction.lower() for word in ["python", "function", "factorial", "fibonacci", "code", "program"]):
+                    if "factorial" in instruction.lower():
+                        example_code = """def factorial(n):
+    \"\"\"Calculate factorial of a number recursively.\"\"\"
+    if n < 0:
+        raise ValueError("Factorial is not defined for negative numbers")
+    elif n <= 1:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+# Example usage:
+print(factorial(5))  # Output: 120
+print(factorial(0))  # Output: 1"""
+                    elif "fibonacci" in instruction.lower():
+                        example_code = """def fibonacci(n):
+    \"\"\"Generate Fibonacci sequence up to n terms.\"\"\"
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    
+    fib_sequence = [0, 1]
+    for i in range(2, n):
+        fib_sequence.append(fib_sequence[i-1] + fib_sequence[i-2])
+    return fib_sequence
+
+# Example usage:
+print(fibonacci(10))  # Output: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]"""
+                    else:
+                        example_code = """def example_function():
+    \"\"\"Generated code based on your instruction.\"\"\"
+    # Implementation would go here
+    return "Result\""""
+                    
+                    st.code(example_code, language="python")
+                
+                elif any(word in instruction.lower() for word in ["write", "create", "generate", "make"]):
+                    if "email" in instruction.lower():
+                        st.info("📧 Subject: Re: Your Inquiry\n\nDear [Name],\n\nThank you for reaching out...")
+                    elif "story" in instruction.lower():
+                        st.info("📖 Once upon a time, in a land of algorithms and data...")
+                    else:
+                        st.code("// Generated content based on your instruction\n// Would appear here")
+                
+                elif any(word in instruction.lower() for word in ["explain", "what", "how", "why"]):
+                    st.info("🎓 Explanation: This concept involves... [detailed explanation would appear here based on the specific topic]")
+                
+                elif "sql" in instruction.lower():
+                    sql_code = """-- Query to get top customers
+SELECT 
+    customer_id,
+    customer_name,
+    SUM(order_total) as total_spent
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+GROUP BY customer_id, customer_name
+ORDER BY total_spent DESC
+LIMIT 10;"""
+                    st.code(sql_code, language="sql")
+                
+                elif any(word in instruction.lower() for word in ["analyze", "analysis"]):
+                    st.info("📊 Analysis: Based on the provided data, the key findings are... [analysis would appear here]")
+                
+                else:
+                    st.info("💡 This would generate a response based on your instruction using the fine-tuned model.")
+                    st.caption(f"Instruction detected: '{instruction[:50]}...' with temperature {temperature}")
         else:
             st.error("Please enter an instruction")
 
@@ -202,7 +280,7 @@ with tab3:
     
     1. **Clone the Repository**
     ```bash
-    git clone https://github.com/YOUR_USERNAME/LLM-FineTuning-Framework.git
+    git clone https://github.com/MrKunalSharma/LLM-FineTuning-Framework.git
     cd LLM-FineTuning-Framework
     ```
     
@@ -256,7 +334,7 @@ st.divider()
 st.markdown("""
 <div style='text-align: center'>
     <p>Built with ❤️ using PyTorch, Transformers, and FastAPI</p>
-    <p><a href='https://github.com/YOUR_USERNAME/LLM-FineTuning-Framework'>GitHub</a> | 
+    <p><a href='https://github.com/MrKunalSharma/LLM-FineTuning-Framework'>GitHub</a> | 
        <a href='https://linkedin.com/in/YOUR_LINKEDIN'>LinkedIn</a></p>
 </div>
 """, unsafe_allow_html=True)
