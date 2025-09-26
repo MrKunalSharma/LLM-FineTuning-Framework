@@ -1,0 +1,41 @@
+# Virtual Environment
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Models and Data
+models/
+!models/.gitkeep
+data/raw/
+data/processed/
+!data/sample_data.jsonl
+*.bin
+*.safetensors
+*.pt
+
+# Logs
+logs/
+*.log
+wandb/
+
+# Environment
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/volumes/
+
+# Metrics
+prometheus_data/
+grafana_data/
+redis_data/

@@ -1,0 +1,4 @@
+[console_scripts]
+llm-api = scripts.run_api:main
+llm-evaluate = scripts.evaluate:main
+llm-train = scripts.train:main

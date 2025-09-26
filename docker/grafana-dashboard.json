@@ -1,0 +1,87 @@
+{
+  "dashboard": {
+    "title": "LLM Fine-tuning API Metrics",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "targets": [
+          {
+            "expr": "rate(llm_api_requests_total[5m])",
+            "legendFormat": "{{endpoint}} - {{status}}"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Response Time (p95)",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(llm_api_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{endpoint}}"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Model Inference Time",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(llm_inference_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{model_name}}"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Active Requests",
+        "targets": [
+          {
+            "expr": "llm_api_active_requests",
+            "legendFormat": "{{endpoint}}"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Tokens Generated",
+        "targets": [
+          {
+            "expr": "rate(llm_tokens_generated_total[5m])",
+            "legendFormat": "{{model_name}}"
+          }
+        ],
+        "type": "counter"
+      },
+      {
+        "title": "Cache Hit Rate",
+        "targets": [
+          {
+            "expr": "rate(llm_cache_requests_total{status='hit'}[5m]) / (rate(llm_cache_requests_total{status='hit'}[5m]) + rate(llm_cache_requests_total{status='miss'}[5m]))",
+            "legendFormat": "Hit Rate"
+          }
+        ],
+        "type": "gauge"
+      },
+      {
+        "title": "GPU Memory Usage",
+        "targets": [
+          {
+            "expr": "llm_gpu_memory_usage_bytes",
+            "legendFormat": "GPU {{device_id}}"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Error Rate",
+        "targets": [
+          {
+            "expr": "rate(llm_errors_total[5m])",
+            "legendFormat": "{{error_type}} - {{endpoint}}"
+          }
+        ],
+        "type": "graph"
+      }
+    ]
+  }
+}
