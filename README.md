@@ -16,6 +16,21 @@ A production-ready framework for fine-tuning Large Language Models (LLMs) using 
 - Python 3.11
 - CUDA-capable GPU (optional, but recommended)
 - Docker (for containerized deployment)
+## 🎨 Streamlit Interface
+
+Access the web interface at http://localhost:8501
+
+Features:
+- Interactive chat interface
+- Real-time analytics dashboard
+- Batch testing capabilities
+- Example use cases
+
+## 🚀 Quick Start with Docker
+
+```bash
+docker-compose up -d
+
 
 ## 🛠️ Installation
 

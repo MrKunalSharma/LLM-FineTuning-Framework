@@ -39,3 +39,4 @@ docker/volumes/
 prometheus_data/
 grafana_data/
 redis_data/
+.streamlit/secrets.toml
