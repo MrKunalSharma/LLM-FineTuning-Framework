@@ -7,6 +7,7 @@ import os
 import time
 from datetime import datetime
 from typing import Optional, Dict
+from .demo_inference import DemoInferenceService
 import uvicorn
 
 from .models import (
@@ -41,33 +42,29 @@ inference_service = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage application lifecycle."""
     global inference_service
     
-    # Startup
     logger.info("Starting API server...")
     model_path = os.getenv("MODEL_PATH", "models/finetuned/final")
     
+    # Use demo mode if on cloud without GPU
+    use_demo = os.getenv("USE_DEMO_MODE", "false").lower() == "true"
+    
     try:
-        inference_service = InferenceService(model_path)
+        if use_demo:
+            inference_service = DemoInferenceService(model_path)
+        else:
+            inference_service = InferenceService(model_path)
+        
         inference_service.load_model()
-        
-        # Set model info for metrics
-        model_info_data = inference_service.get_model_info()
-        set_model_info(
-            name=model_info_data['model_name'],
-            version="1.0",
-            parameters=model_info_data['parameters']
-        )
-        
         logger.info("Model loaded successfully")
     except Exception as e:
-        logger.error(f"Failed to load model: {str(e)}")
-        raise
+        # Fallback to demo mode
+        logger.warning(f"Failed to load real model: {e}. Using demo mode.")
+        inference_service = DemoInferenceService(model_path)
+        inference_service.load_model()
     
     yield
-    
-    # Shutdown
     logger.info("Shutting down API server...")
 
 # Create FastAPI app

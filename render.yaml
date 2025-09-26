@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: llm-finetuning-api
+    env: docker
+    dockerfilePath: ./docker/Dockerfile.render
+    envVars:
+      - key: MODEL_PATH
+        value: models/finetuned/final
+      - key: API_KEY
+        generateValue: true
+      - key: PORT
+        value: 8000

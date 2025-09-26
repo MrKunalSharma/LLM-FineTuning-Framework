@@ -1,0 +1,29 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install only API dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt
+
+# Copy application code
+COPY src/ ./src/
+COPY configs/ ./configs/
+COPY models/finetuned/final/model_info.json ./models/finetuned/final/
+COPY scripts/run_api.py ./scripts/
+
+# Create necessary directories
+RUN mkdir -p logs models/finetuned/final
+
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+CMD ["python", "scripts/run_api.py", "--host", "0.0.0.0", "--port", "8000"]
