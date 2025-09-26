@@ -6,4 +6,5 @@ python-multipart==0.0.6
 python-dotenv==1.0.0
 pyyaml==6.0.1
 prometheus-client==0.19.0
-# Remove torch and transformers for now - use demo mode
+psutil==5.9.6  # Add this
+httpx==0.25.2  # Add this if not already there

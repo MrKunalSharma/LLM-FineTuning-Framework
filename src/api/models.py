@@ -2,6 +2,16 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
+class ModelInfoResponse(BaseModel):
+    """Model information response."""
+    model_config = ConfigDict(protected_namespaces=())  # Add this line
+    
+    model_name: str
+    model_type: str  # This was causing the warning
+    parameters: Dict[str, Any]
+    lora_config: Optional[Dict[str, Any]]
+    device: str
+    quantization: Optional[str]
 
 class InferenceRequest(BaseModel):
     """Request model for inference endpoint."""

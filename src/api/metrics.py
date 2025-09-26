@@ -5,8 +5,19 @@ from fastapi import Response
 import time
 from functools import wraps
 from typing import Callable
-import psutil
-import torch
+
+# Try to import optional dependencies
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+    
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
 
 # Create custom registry
 registry = CollectorRegistry()
@@ -131,26 +142,39 @@ requests_by_user = Counter(
 
 def update_system_metrics():
     """Update system resource metrics."""
-    # CPU and Memory
-    cpu_usage.set(psutil.cpu_percent(interval=1))
-    memory = psutil.virtual_memory()
-    memory_usage.set(memory.used)
+    if PSUTIL_AVAILABLE:
+        # CPU and Memory
+        cpu_usage.set(psutil.cpu_percent(interval=1))
+        memory = psutil.virtual_memory()
+        memory_usage.set(memory.used)
+    else:
+        # Set default values when psutil not available
+        cpu_usage.set(0)
+        memory_usage.set(0)
     
     # GPU metrics (if available)
-    if torch.cuda.is_available():
-        for i in range(torch.cuda.device_count()):
-            gpu_memory_usage.labels(device_id=str(i)).set(
-                torch.cuda.memory_allocated(i)
-            )
-            # Note: GPU utilization requires nvidia-ml-py
-            try:
-                import nvidia_ml_py as nvml
-                nvml.nvmlInit()
-                handle = nvml.nvmlDeviceGetHandleByIndex(i)
-                util = nvml.nvmlDeviceGetUtilizationRates(handle)
-                gpu_utilization.labels(device_id=str(i)).set(util.gpu)
-            except:
-                pass
+    if TORCH_AVAILABLE and hasattr(torch, 'cuda') and torch.cuda.is_available():
+        try:
+            for i in range(torch.cuda.device_count()):
+                gpu_memory_usage.labels(device_id=str(i)).set(
+                    torch.cuda.memory_allocated(i)
+                )
+                # GPU utilization would need nvidia-ml-py
+                try:
+                    import nvidia_ml_py as nvml
+                    nvml.nvmlInit()
+                    handle = nvml.nvmlDeviceGetHandleByIndex(i)
+                    util = nvml.nvmlDeviceGetUtilizationRates(handle)
+                    gpu_utilization.labels(device_id=str(i)).set(util.gpu)
+                except:
+                    gpu_utilization.labels(device_id=str(i)).set(0)
+        except:
+            gpu_memory_usage.labels(device_id="0").set(0)
+            gpu_utilization.labels(device_id="0").set(0)
+    else:
+        # Set default GPU metrics
+        gpu_memory_usage.labels(device_id="0").set(0)
+        gpu_utilization.labels(device_id="0").set(0)
 
 def track_metrics(endpoint: str, method: str = "POST"):
     """Decorator to track API metrics."""
@@ -188,7 +212,10 @@ def track_metrics(endpoint: str, method: str = "POST"):
                 active_requests.labels(endpoint=endpoint).dec()
                 
                 # Update system metrics periodically
-                update_system_metrics()
+                try:
+                    update_system_metrics()
+                except:
+                    pass  # Don't fail request if metrics update fails
         
         return wrapper
     return decorator
