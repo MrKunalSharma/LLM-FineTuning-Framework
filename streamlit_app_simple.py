@@ -55,6 +55,19 @@ with st.sidebar:
         st.error("❌ API Unreachable")
         st.info("Using Demo Mode")
 
+    # Wake Up API button - CORRECTED INDENTATION
+    if st.button("🔄 Wake Up API"):
+        with st.spinner("Waking up API (takes 30-60 seconds)..."):
+            try:
+                response = requests.get(f"{API_URL}/health", timeout=60)
+                if response.status_code == 200:
+                    st.success("API is now active!")
+                    st.rerun()
+                else:
+                    st.warning("API responded but may still be starting...")
+            except Exception as e:
+                st.info("API is waking up, please wait and try again...")
+
 # Main content
 tab1, tab2, tab3 = st.tabs(["💬 Try It", "📊 Features", "🚀 Getting Started"])
 
